@@ -23,8 +23,8 @@ import (
 	"time"
 )
 
-var defaultSetting = GdHTTPSettings{
-	UserAgent:        "GdServer",
+var defaultSetting = XHTTPSettings{
+	UserAgent:        "XServer",
 	ConnectTimeout:   60 * time.Second,
 	ReadWriteTimeout: 60 * time.Second,
 	Gzip:             true,
@@ -42,14 +42,14 @@ func createDefaultCookie() {
 }
 
 // SetDefaultSetting Overwrite default settings
-func SetDefaultSetting(setting GdHTTPSettings) {
+func SetDefaultSetting(setting XHTTPSettings) {
 	settingMutex.Lock()
 	defer settingMutex.Unlock()
 	defaultSetting = setting
 }
 
-// NewGdRequest return *GdHttpRequest with specific method
-func NewGdRequest(rawurl, method string) *GdHTTPRequest {
+// NewXRequest return *XHttpRequest with specific method
+func NewXRequest(rawurl, method string) *XHTTPRequest {
 	var resp http.Response
 	u, err := url.Parse(rawurl)
 	if err != nil {
@@ -63,7 +63,7 @@ func NewGdRequest(rawurl, method string) *GdHTTPRequest {
 		ProtoMajor: 1,
 		ProtoMinor: 1,
 	}
-	return &GdHTTPRequest{
+	return &XHTTPRequest{
 		url:     rawurl,
 		req:     &req,
 		params:  map[string][]string{},
@@ -73,33 +73,33 @@ func NewGdRequest(rawurl, method string) *GdHTTPRequest {
 	}
 }
 
-// Get returns *GdHttpRequest with GET method.
-func Get(url string) *GdHTTPRequest {
-	return NewGdRequest(url, "GET")
+// Get returns *XHttpRequest with GET method.
+func Get(url string) *XHTTPRequest {
+	return NewXRequest(url, "GET")
 }
 
-// Post returns *GdHttpRequest with POST method.
-func Post(url string) *GdHTTPRequest {
-	return NewGdRequest(url, "POST")
+// Post returns *XHttpRequest with POST method.
+func Post(url string) *XHTTPRequest {
+	return NewXRequest(url, "POST")
 }
 
-// Put returns *GdHttpRequest with PUT method.
-func Put(url string) *GdHTTPRequest {
-	return NewGdRequest(url, "PUT")
+// Put returns *XHttpRequest with PUT method.
+func Put(url string) *XHTTPRequest {
+	return NewXRequest(url, "PUT")
 }
 
-// Delete returns *GdHttpRequest DELETE method.
-func Delete(url string) *GdHTTPRequest {
-	return NewGdRequest(url, "DELETE")
+// Delete returns *XHttpRequest DELETE method.
+func Delete(url string) *XHTTPRequest {
+	return NewXRequest(url, "DELETE")
 }
 
-// Head returns *GdHttpRequest with HEAD method.
-func Head(url string) *GdHTTPRequest {
-	return NewGdRequest(url, "HEAD")
+// Head returns *XHttpRequest with HEAD method.
+func Head(url string) *XHTTPRequest {
+	return NewXRequest(url, "HEAD")
 }
 
-// GdHTTPSettings is the http.Client setting
-type GdHTTPSettings struct {
+// XHTTPSettings is the http.Client setting
+type XHTTPSettings struct {
 	ShowDebug        bool
 	UserAgent        string
 	ConnectTimeout   time.Duration
@@ -114,49 +114,49 @@ type GdHTTPSettings struct {
 	Retries          int // if set to -1 means will retry forever
 }
 
-// GdHTTPRequest provides more useful methods for requesting one url than http.Request.
-type GdHTTPRequest struct {
+// XHTTPRequest provides more useful methods for requesting one url than http.Request.
+type XHTTPRequest struct {
 	url     string
 	req     *http.Request
 	params  map[string][]string
 	files   map[string]string
-	setting GdHTTPSettings
+	setting XHTTPSettings
 	resp    *http.Response
 	body    []byte
 	dump    []byte
 }
 
 // GetRequest return the request object
-func (b *GdHTTPRequest) GetRequest() *http.Request {
+func (b *XHTTPRequest) GetRequest() *http.Request {
 	return b.req
 }
 
 // Setting Change request settings
-func (b *GdHTTPRequest) Setting(setting GdHTTPSettings) *GdHTTPRequest {
+func (b *XHTTPRequest) Setting(setting XHTTPSettings) *XHTTPRequest {
 	b.setting = setting
 	return b
 }
 
 // SetBasicAuth sets the request's Authorization header to use HTTP Basic Authentication with the provided username and password.
-func (b *GdHTTPRequest) SetBasicAuth(username, password string) *GdHTTPRequest {
+func (b *XHTTPRequest) SetBasicAuth(username, password string) *XHTTPRequest {
 	b.req.SetBasicAuth(username, password)
 	return b
 }
 
 // SetEnableCookie sets enable/disable cookiejar
-func (b *GdHTTPRequest) SetEnableCookie(enable bool) *GdHTTPRequest {
+func (b *XHTTPRequest) SetEnableCookie(enable bool) *XHTTPRequest {
 	b.setting.EnableCookie = enable
 	return b
 }
 
 // SetUserAgent sets User-Agent header field
-func (b *GdHTTPRequest) SetUserAgent(useragent string) *GdHTTPRequest {
+func (b *XHTTPRequest) SetUserAgent(useragent string) *XHTTPRequest {
 	b.setting.UserAgent = useragent
 	return b
 }
 
 // Debug sets show debug or not when executing request.
-func (b *GdHTTPRequest) Debug(isdebug bool) *GdHTTPRequest {
+func (b *XHTTPRequest) Debug(isdebug bool) *XHTTPRequest {
 	b.setting.ShowDebug = isdebug
 	return b
 }
@@ -165,50 +165,50 @@ func (b *GdHTTPRequest) Debug(isdebug bool) *GdHTTPRequest {
 // default is 0 means no retried.
 // -1 means retried forever.
 // others means retried times.
-func (b *GdHTTPRequest) Retries(times int) *GdHTTPRequest {
+func (b *XHTTPRequest) Retries(times int) *XHTTPRequest {
 	b.setting.Retries = times
 	return b
 }
 
 // DumpBody setting whether need to Dump the Body.
-func (b *GdHTTPRequest) DumpBody(isdump bool) *GdHTTPRequest {
+func (b *XHTTPRequest) DumpBody(isdump bool) *XHTTPRequest {
 	b.setting.DumpBody = isdump
 	return b
 }
 
 // DumpRequest return the DumpRequest
-func (b *GdHTTPRequest) DumpRequest() []byte {
+func (b *XHTTPRequest) DumpRequest() []byte {
 	return b.dump
 }
 
-// SetTimeout sets connect time out and read-write time out for GdRequest.
-func (b *GdHTTPRequest) SetTimeout(connectTimeout, readWriteTimeout time.Duration) *GdHTTPRequest {
+// SetTimeout sets connect time out and read-write time out for XRequest.
+func (b *XHTTPRequest) SetTimeout(connectTimeout, readWriteTimeout time.Duration) *XHTTPRequest {
 	b.setting.ConnectTimeout = connectTimeout
 	b.setting.ReadWriteTimeout = readWriteTimeout
 	return b
 }
 
 // SetTLSClientConfig sets tls connection configurations if visiting https url.
-func (b *GdHTTPRequest) SetTLSClientConfig(config *tls.Config) *GdHTTPRequest {
+func (b *XHTTPRequest) SetTLSClientConfig(config *tls.Config) *XHTTPRequest {
 	b.setting.TLSClientConfig = config
 	return b
 }
 
 // Header add header item string in request.
-func (b *GdHTTPRequest) Header(key, value string) *GdHTTPRequest {
+func (b *XHTTPRequest) Header(key, value string) *XHTTPRequest {
 	b.req.Header.Set(key, value)
 	return b
 }
 
 // SetHost set the request host
-func (b *GdHTTPRequest) SetHost(host string) *GdHTTPRequest {
+func (b *XHTTPRequest) SetHost(host string) *XHTTPRequest {
 	b.req.Host = host
 	return b
 }
 
 // SetProtocolVersion Set the protocol version for incoming requests.
 // Client requests always use HTTP/1.1.
-func (b *GdHTTPRequest) SetProtocolVersion(vers string) *GdHTTPRequest {
+func (b *XHTTPRequest) SetProtocolVersion(vers string) *XHTTPRequest {
 	if len(vers) == 0 {
 		vers = "HTTP/1.1"
 	}
@@ -224,13 +224,13 @@ func (b *GdHTTPRequest) SetProtocolVersion(vers string) *GdHTTPRequest {
 }
 
 // SetCookie add cookie into request.
-func (b *GdHTTPRequest) SetCookie(cookie *http.Cookie) *GdHTTPRequest {
+func (b *XHTTPRequest) SetCookie(cookie *http.Cookie) *XHTTPRequest {
 	b.req.Header.Add("Cookie", cookie.String())
 	return b
 }
 
 // SetTransport set the setting transport
-func (b *GdHTTPRequest) SetTransport(transport http.RoundTripper) *GdHTTPRequest {
+func (b *XHTTPRequest) SetTransport(transport http.RoundTripper) *XHTTPRequest {
 	b.setting.Transport = transport
 	return b
 }
@@ -242,7 +242,7 @@ func (b *GdHTTPRequest) SetTransport(transport http.RoundTripper) *GdHTTPRequest
 // 		u, _ := url.ParseRequestURI("http://127.0.0.1:8118")
 // 		return u, nil
 // 	}
-func (b *GdHTTPRequest) SetProxy(proxy func(*http.Request) (*url.URL, error)) *GdHTTPRequest {
+func (b *XHTTPRequest) SetProxy(proxy func(*http.Request) (*url.URL, error)) *XHTTPRequest {
 	b.setting.Proxy = proxy
 	return b
 }
@@ -251,14 +251,14 @@ func (b *GdHTTPRequest) SetProxy(proxy func(*http.Request) (*url.URL, error)) *G
 //
 // If CheckRedirect is nil, the Client uses its default policy,
 // which is to stop after 10 consecutive requests.
-func (b *GdHTTPRequest) SetCheckRedirect(redirect func(req *http.Request, via []*http.Request) error) *GdHTTPRequest {
+func (b *XHTTPRequest) SetCheckRedirect(redirect func(req *http.Request, via []*http.Request) error) *XHTTPRequest {
 	b.setting.CheckRedirect = redirect
 	return b
 }
 
 // Param adds query param in to request.
 // params build query string as ?key1=value1&key2=value2...
-func (b *GdHTTPRequest) Param(key, value string) *GdHTTPRequest {
+func (b *XHTTPRequest) Param(key, value string) *XHTTPRequest {
 	if param, ok := b.params[key]; ok {
 		b.params[key] = append(param, value)
 	} else {
@@ -268,14 +268,14 @@ func (b *GdHTTPRequest) Param(key, value string) *GdHTTPRequest {
 }
 
 // PostFile add a post file to the request
-func (b *GdHTTPRequest) PostFile(formname, filename string) *GdHTTPRequest {
+func (b *XHTTPRequest) PostFile(formname, filename string) *XHTTPRequest {
 	b.files[formname] = filename
 	return b
 }
 
 // Body adds request raw body.
 // it supports string and []byte.
-func (b *GdHTTPRequest) Body(data interface{}) *GdHTTPRequest {
+func (b *XHTTPRequest) Body(data interface{}) *XHTTPRequest {
 	switch t := data.(type) {
 	case string:
 		bf := bytes.NewBufferString(t)
@@ -290,7 +290,7 @@ func (b *GdHTTPRequest) Body(data interface{}) *GdHTTPRequest {
 }
 
 // XMLBody adds request raw body encoding by XML.
-func (b *GdHTTPRequest) XMLBody(obj interface{}) (*GdHTTPRequest, error) {
+func (b *XHTTPRequest) XMLBody(obj interface{}) (*XHTTPRequest, error) {
 	if b.req.Body == nil && obj != nil {
 		byts, err := xml.Marshal(obj)
 		if err != nil {
@@ -304,7 +304,7 @@ func (b *GdHTTPRequest) XMLBody(obj interface{}) (*GdHTTPRequest, error) {
 }
 
 // YAMLBody adds request raw body encoding by YAML.
-func (b *GdHTTPRequest) YAMLBody(obj interface{}) (*GdHTTPRequest, error) {
+func (b *XHTTPRequest) YAMLBody(obj interface{}) (*XHTTPRequest, error) {
 	if b.req.Body == nil && obj != nil {
 		byts, err := yaml.Marshal(obj)
 		if err != nil {
@@ -318,7 +318,7 @@ func (b *GdHTTPRequest) YAMLBody(obj interface{}) (*GdHTTPRequest, error) {
 }
 
 // JSONBody adds request raw body encoding by JSON.
-func (b *GdHTTPRequest) JSONBody(obj interface{}) (*GdHTTPRequest, error) {
+func (b *XHTTPRequest) JSONBody(obj interface{}) (*XHTTPRequest, error) {
 	if b.req.Body == nil && obj != nil {
 		byts, err := json.Marshal(obj)
 		if err != nil {
@@ -331,7 +331,7 @@ func (b *GdHTTPRequest) JSONBody(obj interface{}) (*GdHTTPRequest, error) {
 	return b, nil
 }
 
-func (b *GdHTTPRequest) buildURL(paramBody string) {
+func (b *XHTTPRequest) buildURL(paramBody string) {
 	// build GET url with query string
 	if b.req.Method == "GET" && len(paramBody) > 0 {
 		if strings.Contains(b.url, "?") {
@@ -387,7 +387,7 @@ func (b *GdHTTPRequest) buildURL(paramBody string) {
 	}
 }
 
-func (b *GdHTTPRequest) getResponse() (*http.Response, error) {
+func (b *XHTTPRequest) getResponse() (*http.Response, error) {
 	if b.resp.StatusCode != 0 {
 		return b.resp, nil
 	}
@@ -400,7 +400,7 @@ func (b *GdHTTPRequest) getResponse() (*http.Response, error) {
 }
 
 // DoRequest will do the client.Do
-func (b *GdHTTPRequest) DoRequest() (resp *http.Response, err error) {
+func (b *XHTTPRequest) DoRequest() (resp *http.Response, err error) {
 	var paramBody string
 	if len(b.params) > 0 {
 		var buf bytes.Buffer
@@ -491,7 +491,7 @@ func (b *GdHTTPRequest) DoRequest() (resp *http.Response, err error) {
 
 // String returns the body string in response.
 // it calls Response inner.
-func (b *GdHTTPRequest) String() (string, error) {
+func (b *XHTTPRequest) String() (string, error) {
 	data, err := b.Bytes()
 	if err != nil {
 		return "", err
@@ -502,7 +502,7 @@ func (b *GdHTTPRequest) String() (string, error) {
 
 // Bytes returns the body []byte in response.
 // it calls Response inner.
-func (b *GdHTTPRequest) Bytes() ([]byte, error) {
+func (b *XHTTPRequest) Bytes() ([]byte, error) {
 	if b.body != nil {
 		return b.body, nil
 	}
@@ -528,7 +528,7 @@ func (b *GdHTTPRequest) Bytes() ([]byte, error) {
 
 // ToFile saves the body data in response to one file.
 // it calls Response inner.
-func (b *GdHTTPRequest) ToFile(filename string) error {
+func (b *XHTTPRequest) ToFile(filename string) error {
 	resp, err := b.getResponse()
 	if err != nil {
 		return err
@@ -568,7 +568,7 @@ func pathExistAndMkdir(filename string) (err error) {
 
 // ToJSON returns the map that marshals from the body bytes as json in response .
 // it calls Response inner.
-func (b *GdHTTPRequest) ToJSON(v interface{}) error {
+func (b *XHTTPRequest) ToJSON(v interface{}) error {
 	data, err := b.Bytes()
 	if err != nil {
 		return err
@@ -578,7 +578,7 @@ func (b *GdHTTPRequest) ToJSON(v interface{}) error {
 
 // ToXML returns the map that marshals from the body bytes as xml in response .
 // it calls Response inner.
-func (b *GdHTTPRequest) ToXML(v interface{}) error {
+func (b *XHTTPRequest) ToXML(v interface{}) error {
 	data, err := b.Bytes()
 	if err != nil {
 		return err
@@ -588,7 +588,7 @@ func (b *GdHTTPRequest) ToXML(v interface{}) error {
 
 // ToYAML returns the map that marshals from the body bytes as yaml in response .
 // it calls Response inner.
-func (b *GdHTTPRequest) ToYAML(v interface{}) error {
+func (b *XHTTPRequest) ToYAML(v interface{}) error {
 	data, err := b.Bytes()
 	if err != nil {
 		return err
@@ -597,7 +597,7 @@ func (b *GdHTTPRequest) ToYAML(v interface{}) error {
 }
 
 // Response executes request client gets response mannually.
-func (b *GdHTTPRequest) Response() (*http.Response, error) {
+func (b *XHTTPRequest) Response() (*http.Response, error) {
 	return b.getResponse()
 }
 
