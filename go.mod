@@ -1,4 +1,4 @@
-module xlhttp
+module xhttp
 
 go 1.14
 
